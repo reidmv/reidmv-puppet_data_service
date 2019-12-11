@@ -1,0 +1,11 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Show all Hiera data for a given level",
+  "parameters": {
+    "level": {
+      "type": "String",
+      "description": "The hiera level to show data for"
+    }
+  }
+}

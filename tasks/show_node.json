@@ -1,0 +1,11 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Show node data",
+  "parameters": {
+    "certname": {
+      "type": "String",
+      "description": "The certname of the node to show"
+    }
+  }
+}
