@@ -3,8 +3,6 @@
 require_relative "../../ruby_task_helper/files/task_helper.rb"
 require 'socket'
 require 'cassandra'
-require 'json'
-
 
 class ShowNode < TaskHelper
   def task(certname:, **kwargs)
@@ -14,13 +12,12 @@ class ShowNode < TaskHelper
     session  = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
     statement = session.prepare('SELECT * FROM nodedata WHERE certname=?').bind([certname])
-    future = session.execute_async(statement)
+    result    = session.execute(statement)
 
-    future.on_success do |rows|
-      rows.first.to_json # Just return the first row
-    end
-
-    future.join
+    {'node' => result.first }
   end
 end
 
+if __FILE__ == $0
+    ShowNode.run
+end

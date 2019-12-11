@@ -7,5 +7,7 @@
       "type": "String",
       "description": "The certname of the node to show"
     }
-  }
+  },
+  "files": ["ruby_task_helper/files/task_helper.rb"],
+  "input_method": "stdin"
 }

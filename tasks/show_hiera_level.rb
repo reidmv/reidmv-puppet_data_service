@@ -3,8 +3,6 @@
 require_relative "../../ruby_task_helper/files/task_helper.rb"
 require 'socket'
 require 'cassandra'
-require 'json'
-
 
 class ShowHieraLevel < TaskHelper
   def task(level:, **kwargs)
@@ -14,15 +12,16 @@ class ShowHieraLevel < TaskHelper
     session  = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
     statement = session.prepare('SELECT * FROM hieradata WHERE level=?').bind([level])
-    future = session.execute_async(statement)
+    result    = session.execute(statement)
 
-    future.on_success do |rows|
-      rows.to_a.map do |row|
-        [row['key'], row['value']]
-      end.to_h
-    end
+    hash = result.to_a.map do |row|
+      [row['key'], row['value']]
+    end.to_h
 
-    future.join
+    {'data' => hash}
   end
 end
 
+if __FILE__ == $0
+    ShowHieraLevel.run
+end

@@ -7,5 +7,7 @@
       "type": "String",
       "description": "The hiera level to show data for"
     }
-  }
+  },
+  "files": ["ruby_task_helper/files/task_helper.rb"],
+  "input_method": "stdin"
 }
