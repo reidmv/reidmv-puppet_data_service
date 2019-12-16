@@ -3,6 +3,7 @@
 require_relative "../../ruby_task_helper/files/task_helper.rb"
 require 'socket'
 require 'cassandra'
+require 'json'
 
 class ShowHieraLevel < TaskHelper
   def task(level:, **kwargs)
@@ -15,7 +16,7 @@ class ShowHieraLevel < TaskHelper
     result    = session.execute(statement)
 
     hash = result.to_a.map do |row|
-      [row['key'], row['value']]
+      [row['key'], JSON.parse(row['value'])]
     end.to_h
 
     {'data' => hash}

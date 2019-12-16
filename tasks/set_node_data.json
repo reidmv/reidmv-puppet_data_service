@@ -1,0 +1,25 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Set data for a node",
+  "parameters": {
+    "certname": {
+      "type": "String",
+      "description": "The certname of the node to show"
+    },
+    "environment": {
+      "type": "String",
+      "description": "The environment the node belongs to"
+    },
+    "release": {
+      "type": "String",
+      "description": "The code release the node should use"
+    },
+    "classes": {
+      "type": "Optional[Array[String]]",
+      "description": "A list of classes to assign to the node"
+    }
+  },
+  "files": ["ruby_task_helper/files/task_helper.rb"],
+  "input_method": "stdin"
+}

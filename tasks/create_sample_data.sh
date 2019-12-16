@@ -8,14 +8,14 @@ cqlsh $(hostname -f) <<EOF
   VALUES ('nodes/testnode1.example.com', 'class::value1', 'nodes');
 
   INSERT INTO puppet.hieradata (level, key, value)
-  VALUES ('environments/production', 'class::value1', 'environments-prod');
+  VALUES ('environments/production', 'class::value1', '"environments-prod"');
 
   INSERT INTO puppet.hieradata (level, key, value)
-  VALUES ('environments/production', 'class::value2', 'environments-prod');
+  VALUES ('environments/production', 'class::value2', '"environments-prod"');
 
   INSERT INTO puppet.hieradata (level, key, value)
-  VALUES ('environments/production', 'class::value3', 'environments-prod');
+  VALUES ('environments/production', 'class::value3', '"environments-prod"');
 
   INSERT INTO puppet.hieradata (level, key, value)
-  VALUES ('environments/development', 'class::value1', 'environments-dev');
+  VALUES ('environments/development', 'class::value1', '"environments-dev"');
 EOF

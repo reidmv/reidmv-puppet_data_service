@@ -1,0 +1,17 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Set Hiera data",
+  "parameters": {
+    "level": {
+      "type": "String",
+      "description": "The hiera level to set data at"
+    },
+    "data": {
+      "type": "Hash[String, Data]",
+      "description": "The hash of key/value pairs to set as data at the specified level"
+    }
+  },
+  "files": ["ruby_task_helper/files/task_helper.rb"],
+  "input_method": "stdin"
+}
