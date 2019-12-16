@@ -1,8 +1,4 @@
-# puppet_metadata_service
-
-Welcome to your new module. A short overview of the generated parts can be found in the PDK documentation at https://puppet.com/pdk/latest/pdk_generating_modules.html .
-
-The README template below provides a starting point with details about what information to include in your README.
+# Puppet Metadata Service module
 
 #### Table of Contents
 
@@ -17,23 +13,21 @@ The README template below provides a starting point with details about what info
 
 ## Description
 
-Briefly tell users why they might want to use your module. Explain what your module does and what kind of problems users can solve with it.
+The Puppet metadata service provides a centralized, highly available, API-driven interface for Puppet node data and for Hiera data. The metadata service supports self-service use cases, and Puppet-as-a-Service (PUPaaS) use cases, providing a foundational mechanism for allowing service customer teams to get work done without requiring manual work to be performed by the PUPaaS team.
 
-This should be a fairly short description helps the user decide if your module is what they want.
+The metadata service is backed by a Cassandra database.
+
+This module contains:
+
+* Classes to configure Cassandra cluster nodes for testing and development
+* Tasks for initializing a Cassandra schema for the Puppet metadata service
+* Tasks to perform CRUD operations on data in the Puppet metadata service
+* TODO: Hiera 5 backend for the Puppet metadata service
+* TODO: `trusted_external_command` integration for the Puppet metadata service
 
 ## Setup
 
-### What puppet_metadata_service affects **OPTIONAL**
-
-If it's obvious what your module touches, you can skip this section. For example, folks can probably figure out that your mysql_instance module affects their MySQL instances.
-
-If there's more that they should know about, though, this is the place to mention:
-
-* Files, packages, services, or operations that the module will alter, impact, or execute.
-* Dependencies that your module automatically installs.
-* Warnings or other important notices.
-
-### Setup Requirements **OPTIONAL**
+### Setup Requirements
 
 If your module requires anything extra before setting up (pluginsync enabled, another module, etc.), mention it here.
 
