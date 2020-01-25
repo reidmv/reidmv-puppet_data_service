@@ -1,1 +1,6 @@
-
+<%- | Array $hosts | -%>
+---
+hosts:
+<% $hosts.each |$host| { -%>
+  - <%= $host %>
+<% } -%>

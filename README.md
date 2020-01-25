@@ -22,16 +22,14 @@ This module contains:
 * Classes to configure Cassandra cluster nodes for testing and development
 * Tasks for initializing a Cassandra schema for the Puppet metadata service
 * Tasks to perform CRUD operations on data in the Puppet metadata service
-* TODO: Hiera 5 backend for the Puppet metadata service
-* TODO: `trusted_external_command` integration for the Puppet metadata service
+* Hiera 5 backend for the Puppet metadata service
+* trusted_external_command` integration for the Puppet metadata service
 
 ## Setup
 
 ### Setup Requirements
 
-If your module requires anything extra before setting up (pluginsync enabled, another module, etc.), mention it here.
-
-If your most recent release breaks compatibility or requires particular steps for upgrading, you might want to include an additional "Upgrading" section here.
+`puppetserver gem install cassandra-driver`
 
 ### Beginning with puppet_metadata_service
 

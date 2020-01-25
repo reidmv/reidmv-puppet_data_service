@@ -13,23 +13,22 @@ class PuppetMetadataClient
   end
 
   def get_nodedata(certname:)
-    statement = @session.prepare('SELECT * FROM nodedata WHERE certname=?').bind([certname])
+    statement = @session.prepare('SELECT json classes,environment,release FROM nodedata WHERE certname=?').bind([certname])
     result    = @session.execute(statement)
 
-    data = result.first
-
-    # Convert the Ruby Set object into an array
-    data['classes'] = data.delete('classes').to_a unless data['classes'].nil?
-
-    {'nodedata' => data }
+    if result.first.nil?
+      return {}
+    else
+      return {'nodedata' => JSON.parse(result.first['[json]']) }
+    end
   end
 end
 
 if __FILE__ == $0
   config = YAML.load_file('/etc/puppetlabs/puppet/puppet-metadata-service.yaml')
 
-  PuppetMetadataClient.new(hosts: config['hosts'])
-  data = PuppetMetadataClient.get_nodedata(certname: ARGV[0])
+  client = PuppetMetadataClient.new(hosts: config['hosts'])
+  data = client.get_nodedata(certname: ARGV[0])
 
   puts data.to_json
 end
