@@ -32,5 +32,39 @@ class puppet_metadata_service::cassandra (
       }],
     },
   }
-
+  class { 'cassandra::schema':
+    cqlsh_password => 'cassandra',
+    cqlsh_user     => 'cassandra',
+    cqlsh_host     => $::ipaddress,
+    keyspaces      => {
+      'puppet' => {
+        durable_writes  => false,
+        replication_map => {
+          keyspace_class     => 'SimpleStrategy',
+          replication_factor => 1,
+        },
+      }
+    },
+    tables         => {
+      'nodedata' => {
+        columns  => {
+          certname      => 'text',
+          environment   => 'text',
+          release       => 'text',
+          classes       => 'set<text>',
+          'PRIMARY KEY' => '(certname)'
+        },
+        keyspace => 'puppet'
+      },
+      'hieradata' => {
+        columns  => {
+          level         => 'text',
+          key           => 'text',
+          value         => 'text',
+          'PRIMARY KEY' => '(level, key)'
+        },
+        keyspace => 'puppet'
+      }
+    }
+  }
 }
