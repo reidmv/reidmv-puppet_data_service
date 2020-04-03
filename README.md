@@ -1,4 +1,4 @@
-# Puppet Metadata Service module
+# Puppet Data Service Pattern & Reference Implementation
 
 #### Table of Contents
 

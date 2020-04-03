@@ -1,5 +1,6 @@
 class puppet_metadata_service::cassandra (
   String $seeds,
+  String $dc = 'DC1',
 ) {
 
   class { 'cassandra::apache_repo':
@@ -9,7 +10,7 @@ class puppet_metadata_service::cassandra (
 
   class { 'cassandra':
     package_name => 'cassandra',
-    dc           => getvar('trusted.extensions.pp_cluster'),
+    dc           => $dc,
     settings     => {
       'cluster_name' => 'PuppetMetadataCluster',
       'endpoint_snitch' => 'GossipingPropertyFileSnitch',
