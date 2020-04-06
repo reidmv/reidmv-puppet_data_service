@@ -1,6 +1,6 @@
 #!/opt/puppetlabs/puppet/bin/ruby
 
-require_relative "../../ruby_task_helper/files/task_helper.rb"
+require_relative '../../ruby_task_helper/files/task_helper.rb'
 require 'socket'
 require 'cassandra'
 require 'json'
@@ -8,7 +8,7 @@ require 'json'
 class DeleteHieraData < TaskHelper
   def task(level:,
            keys:,
-           **kwargs)
+           **_kwargs)
 
     cluster = Cassandra.cluster(hosts: [Socket.gethostname])
 
@@ -27,6 +27,6 @@ class DeleteHieraData < TaskHelper
   end
 end
 
-if __FILE__ == $0
-    DeleteHieraData.run
+if $PROGRAM_NAME == __FILE__
+  DeleteHieraData.run
 end

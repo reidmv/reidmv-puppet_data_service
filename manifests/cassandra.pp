@@ -1,4 +1,4 @@
-class puppet_metadata_service::cassandra (
+class puppet_data_service::cassandra (
   String $seeds,
   String $dc = 'DC1',
 ) {
@@ -12,7 +12,7 @@ class puppet_metadata_service::cassandra (
     package_name => 'cassandra',
     dc           => $dc,
     settings     => {
-      'cluster_name' => 'PuppetMetadataCluster',
+      'cluster_name' => 'PuppetDataCluster',
       'endpoint_snitch' => 'GossipingPropertyFileSnitch',
       'commitlog_directory' => '/var/lib/cassandra/commitlog',
       'hints_directory' => '/var/lib/cassandra/hints',
@@ -44,10 +44,21 @@ class puppet_metadata_service::cassandra (
           keyspace_class     => 'SimpleStrategy',
           replication_factor => 1,
         },
-      }
+      },
     },
     tables         => {
+      'environments' => {
+        keyspace => 'puppet',
+        columns  => {
+          'name'        => 'text',
+          'type'        => 'text',
+          'remote'      => 'text',
+          'modules'     => 'map<text,text>',
+          'PRIMARY KEY' => '(name)'
+        },
+      },
       'nodedata' => {
+        keyspace => 'puppet',
         columns  => {
           certname      => 'text',
           environment   => 'text',
@@ -55,16 +66,15 @@ class puppet_metadata_service::cassandra (
           classes       => 'set<text>',
           'PRIMARY KEY' => '(certname)'
         },
-        keyspace => 'puppet'
       },
       'hieradata' => {
+        keyspace => 'puppet',
         columns  => {
           level         => 'text',
           key           => 'text',
           value         => 'text',
           'PRIMARY KEY' => '(level, key)'
         },
-        keyspace => 'puppet'
       }
     }
   }

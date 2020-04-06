@@ -1,12 +1,12 @@
 #!/opt/puppetlabs/puppet/bin/ruby
 
-require_relative "../../ruby_task_helper/files/task_helper.rb"
+require_relative '../../ruby_task_helper/files/task_helper.rb'
 require 'socket'
 require 'cassandra'
 require 'set'
 
 class ShowNode < TaskHelper
-  def task(certname:, **kwargs)
+  def task(certname:, **_kwargs)
     cluster = Cassandra.cluster(hosts: [Socket.gethostname])
 
     keyspace = 'puppet'
@@ -20,10 +20,10 @@ class ShowNode < TaskHelper
     # Convert the Ruby Set object into an array
     data['classes'] = data.delete('classes').to_a unless data['classes'].nil?
 
-    {'node' => data }
+    { 'node' => data }
   end
 end
 
-if __FILE__ == $0
-    ShowNode.run
+if $PROGRAM_NAME == __FILE__
+  ShowNode.run
 end
