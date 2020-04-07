@@ -1,6 +1,6 @@
 #!/opt/puppetlabs/puppet/bin/ruby
 
-require_relative "../../ruby_task_helper/files/task_helper.rb"
+require_relative '../../ruby_task_helper/files/task_helper.rb'
 require 'socket'
 require 'cassandra'
 require 'json'
@@ -8,7 +8,7 @@ require 'json'
 class SetHieraData < TaskHelper
   def task(level:,
            data:,
-           **kwargs)
+           **_kwargs)
 
     cluster = Cassandra.cluster(hosts: [Socket.gethostname])
 
@@ -20,7 +20,7 @@ class SetHieraData < TaskHelper
       VALUES (?, ?, ?);
     CQL
 
-    futures = data.map do |key,value|
+    futures = data.map do |key, value|
       session.execute_async(statement, arguments: [level, key.to_s, value.to_json])
     end
 
@@ -28,6 +28,6 @@ class SetHieraData < TaskHelper
   end
 end
 
-if __FILE__ == $0
-    SetHieraData.run
+if $PROGRAM_NAME == __FILE__
+  SetHieraData.run
 end

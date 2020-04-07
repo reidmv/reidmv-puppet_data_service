@@ -4,7 +4,7 @@ require 'cassandra'
 require 'json'
 require 'yaml'
 
-class PuppetMetadataClient
+class PuppetDataClient
   def initialize(hosts:)
     @cluster = Cassandra.cluster(hosts: hosts)
     keyspace = 'puppet'
@@ -19,15 +19,15 @@ class PuppetMetadataClient
     if result.first.nil?
       return {}
     else
-      return {'nodedata' => JSON.parse(result.first['[json]']) }
+      return { 'nodedata' => JSON.parse(result.first['[json]']) }
     end
   end
 end
 
-if __FILE__ == $0
-  config = YAML.load_file('/etc/puppetlabs/puppet/puppet-metadata-service.yaml')
+if $PROGRAM_NAME == __FILE__
+  config = YAML.load_file('/etc/puppetlabs/puppet/puppet-data-service.yaml')
 
-  client = PuppetMetadataClient.new(hosts: config['hosts'])
+  client = PuppetDataClient.new(hosts: config['hosts'])
   data = client.get_nodedata(certname: ARGV[0])
 
   puts data.to_json
