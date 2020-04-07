@@ -1,7 +1,7 @@
 {
   "puppet_task_version": 1,
   "supports_noop": false,
-  "description": "Populate the Puppet Metadata Service database with some sample data",
+  "description": "Populate the Puppet Data Service database with some sample data",
   "parameters": {
   }
 }

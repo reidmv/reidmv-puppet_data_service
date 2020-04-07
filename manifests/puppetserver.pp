@@ -1,23 +1,33 @@
-class puppet_metadata_service::puppetserver {
+class puppet_data_service::puppetserver {
+
+  ['puppet_gem', 'puppetserver_gem'].each |$provider| {
+    package { "${provider} cassandra-driver":
+      name     => 'cassandra-driver',
+      ensure   => present,
+      provider => $provider,
+    }
+  }
 
   file { '/etc/puppetlabs/puppet/get-nodedata.rb':
     ensure => file,
     owner  => 'pe-puppet',
     group  => 'pe-puppet',
     mode   => '0755',
-    source => 'puppet:///modules/puppet_metadata_service/get-nodedata.rb',
+    source => 'puppet:///modules/puppet_data_service/get-nodedata.rb',
   }
 
-  $hosts = puppetdb_query('resources[certname] { type = "Class" and title = "Puppet_metadata_service::Cassandra" }').map |$resource| {
-    $resource['certname']
-  }.sort
+  $hosts = puppetdb_query(@(PQL)).map |$rsrc| { $rsrc['certname'] }.sort
+    resources[certname] {
+      type = "Class" and
+      title = "Puppet_data_service::Cassandra" }
+    | PQL
 
-  file { '/etc/puppetlabs/puppet/puppet-metadata-service.yaml':
+  file { '/etc/puppetlabs/puppet/puppet-data-service.yaml':
     ensure  => file,
     owner   => 'pe-puppet',
     group   => 'pe-puppet',
     mode    => '0640',
-    content => epp('puppet_metadata_service/puppet-metadata-service.yaml.epp', {
+    content => epp('puppet_data_service/puppet-data-service.yaml.epp', {
       hosts => $hosts
     }),
   }

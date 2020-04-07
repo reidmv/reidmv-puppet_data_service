@@ -1,7 +1,7 @@
 {
   "puppet_task_version": 1,
   "supports_noop": false,
-  "description": "Create the Puppet Metadata Service schema in a new Cassandra cluster",
+  "description": "Create the Puppet Data Service schema in a new Cassandra cluster",
   "parameters": {
   }
 }
