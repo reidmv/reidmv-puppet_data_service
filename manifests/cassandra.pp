@@ -54,6 +54,7 @@ class puppet_data_service::cassandra (
 
   class { 'cassandra':
     package_name                    => 'cassandra',
+    service_ensure                  => 'running',
     dc                              => $dc,
     settings                        => {
       'cluster_name'                => 'PuppetDataCluster',
