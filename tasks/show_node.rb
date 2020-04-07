@@ -18,7 +18,7 @@ class ShowNode < TaskHelper
     data = result.first
 
     # Convert the Ruby Set object into an array
-    data['classes'] = data.delete('classes').to_a unless data['classes'].nil?
+    data['classes'] = data.delete('classes').to_a unless data.nil? || data['classes'].nil?
 
     { 'node' => data }
   end
