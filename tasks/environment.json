@@ -19,9 +19,9 @@
       "type": "Optional[String]",
       "description": "The git source clone URL for the environment"
     },
-    "ref": {
+    "version": {
       "type": "Optional[String]",
-      "description": "The version ref to deploy the environment at"
+      "description": "The version, or git ref, to deploy the environment at"
     }
   },
   "files": ["ruby_task_helper/files/task_helper.rb"],

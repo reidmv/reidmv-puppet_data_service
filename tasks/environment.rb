@@ -10,26 +10,26 @@ class SetNodeData < TaskHelper
            name: nil,
            type: 'bare',
            remote:  nil,
-           ref: nil,
+           version: nil,
            **kwargs)
 
     cluster  = Cassandra.cluster(hosts: [Socket.gethostname])
     keyspace = 'puppet'
     @session = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
-    send(operation, name: name, type: type, remote: remote, ref: ref)
+    send(operation, name: name, type: type, remote: remote, version: version)
   end
 
   def list(opts)
-    statement = @session.prepare('SELECT name, type, remote, ref FROM environments')
+    statement = @session.prepare('SELECT name, type, remote, version FROM environments')
     list      = @session.execute(statement).to_a.map(&:compact)
 
     { 'environments' => list }
   end
 
   def add(opts)
-    statement = @session.prepare(<<-CQL).bind([opts[:name], opts[:type], opts[:remote], opts[:ref]])
-      INSERT INTO puppet.environments (name, type, remote, ref)
+    statement = @session.prepare(<<-CQL).bind([opts[:name], opts[:type], opts[:remote], opts[:version]])
+      INSERT INTO puppet.environments (name, type, remote, version)
       VALUES (?, ?, ?, ?);
     CQL
 
@@ -40,7 +40,7 @@ class SetNodeData < TaskHelper
   end
 
   def modify(opts)
-    set = opts.select { |key,val| [:type, :remote, :ref].include?(key) && !val.nil? }.keys
+    set = opts.select { |key,val| [:type, :remote, :version].include?(key) && !val.nil? }.keys
 
     statement = @session.prepare(<<-"CQL").bind(set.map { |key| opts[key] } << opts[:name])
       UPDATE puppet.environments
