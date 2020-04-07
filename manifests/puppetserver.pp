@@ -1,5 +1,16 @@
 class puppet_data_service::puppetserver {
 
+  # Build dependencies
+  ['make', 'automake', 'gcc', 'gcc-c++', 'kernel-devel'].each |$package| {
+    package { $package:
+      ensure => present,
+      before => [
+        Package['puppet_gem cassandra-driver'],
+        Package['puppetserver_gem cassandra-driver'],
+      ],
+    }
+  }
+
   ['puppet_gem', 'puppetserver_gem'].each |$provider| {
     package { "${provider} cassandra-driver":
       name     => 'cassandra-driver',
