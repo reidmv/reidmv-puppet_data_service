@@ -99,6 +99,7 @@ class puppet_data_service::cassandra (
           'name'        => 'text',
           'type'        => 'text',
           'remote'      => 'text',
+          'version'     => 'text',
           'modules'     => 'map<text,text>',
           'PRIMARY KEY' => '(name)'
         },
