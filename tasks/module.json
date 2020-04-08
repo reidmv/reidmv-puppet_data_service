@@ -19,9 +19,9 @@
       "type": "Optional[Enum[git, forge]]",
       "description": "The module type"
     },
-    "remote": {
+    "source": {
       "type": "Optional[String]",
-      "description": "The git source clone URL for the module"
+      "description": "The source, e.g. git source clone URL, for the module"
     },
     "version": {
       "type": "Optional[String]",

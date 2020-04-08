@@ -9,7 +9,7 @@ class EnvironmentData < TaskHelper
   def task(operation:,
            name: nil,
            type: 'bare',
-           remote:  nil,
+           source:  nil,
            version: nil,
            **kwargs)
 
@@ -17,19 +17,19 @@ class EnvironmentData < TaskHelper
     keyspace = 'puppet'
     @session = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
-    send(operation, name: name, type: type, remote: remote, version: version)
+    send(operation, name: name, type: type, source: source, version: version)
   end
 
   def list(opts)
-    statement = @session.prepare('SELECT name, type, remote, version FROM environments')
+    statement = @session.prepare('SELECT name, type, source, version FROM environments')
     list      = @session.execute(statement).to_a.map(&:compact)
 
     { 'environments' => list }
   end
 
   def add(opts)
-    statement = @session.prepare(<<-CQL).bind([opts[:name], opts[:type], opts[:remote], opts[:version]])
-      INSERT INTO environments (name, type, remote, version)
+    statement = @session.prepare(<<-CQL).bind([opts[:name], opts[:type], opts[:source], opts[:version]])
+      INSERT INTO environments (name, type, source, version)
       VALUES (?, ?, ?, ?);
     CQL
 
@@ -40,7 +40,7 @@ class EnvironmentData < TaskHelper
   end
 
   def modify(opts)
-    set = opts.select { |key,val| [:type, :remote, :version].include?(key) && !val.nil? }.keys
+    set = opts.select { |key,val| [:type, :source, :version].include?(key) && !val.nil? }.keys
 
     statement = @session.prepare(<<-"CQL").bind(set.map { |key| opts[key] } << opts[:name])
       UPDATE environments

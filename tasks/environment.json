@@ -15,9 +15,9 @@
       "type": "Optional[Enum[git, bare]]",
       "description": "The environment type"
     },
-    "remote": {
+    "source": {
       "type": "Optional[String]",
-      "description": "The git source clone URL for the environment"
+      "description": "The source, e.g. git clone URL, for the environment"
     },
     "version": {
       "type": "Optional[String]",

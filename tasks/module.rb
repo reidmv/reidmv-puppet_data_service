@@ -10,7 +10,7 @@ class ModuleData < TaskHelper
            environment:,
            name: nil,
            type: nil,
-           remote:  nil,
+           source:  nil,
            version: nil,
            **kwargs)
 
@@ -18,7 +18,7 @@ class ModuleData < TaskHelper
     keyspace = 'puppet'
     @session = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
-    send(operation, environment: environment, name: name, type: type, remote: remote, version: version)
+    send(operation, environment: environment, name: name, type: type, source: source, version: version)
   end
 
   def list(opts)
@@ -40,7 +40,7 @@ class ModuleData < TaskHelper
   end
 
   def add(opts)
-    moddata = [:type, :version, :remote].map { |key| [key.to_s, opts[key]] }.to_h.compact.to_json
+    moddata = [:type, :version, :source].map { |key| [key.to_s, opts[key]] }.to_h.compact.to_json
 
     statement = @session.prepare(<<-CQL).bind([opts[:name], moddata, opts[:environment]])
       UPDATE environments
@@ -65,7 +65,7 @@ class ModuleData < TaskHelper
     current = @session.execute(select).first['modules'][opts[:name]]
 
     # Determine which keys will be updated for the module
-    update = opts.select { |key,val| [:type, :remote, :version].include?(key) && !val.nil? }
+    update = opts.select { |key,val| [:type, :source, :version].include?(key) && !val.nil? }
     new = JSON.parse(current).merge(update.map { |key,val| [key.to_s, val] }.to_h)
 
     update = @session.prepare(<<-"CQL").bind([opts[:name], new.to_json, opts[:environment]])
