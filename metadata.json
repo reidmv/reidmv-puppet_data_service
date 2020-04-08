@@ -2,13 +2,21 @@
   "name": "reidmv-puppet_data_service",
   "version": "0.1.0",
   "author": "Reid Vandewiele",
-  "summary": "",
+  "summary": "Reference implementation of the Puppet Data Service Pattern",
   "license": "Apache-2.0",
-  "source": "",
+  "source": "https://github.com/reidmv/reidmv-puppet_data_service.git",
   "dependencies": [
     {
       "name": "puppetlabs/puppetserver_gem",
       "version_requirement": ">= 1.1.1 < 2.0.0"
+    },
+    {
+      "name": "puppet/cassandra",
+      "version_requirement": ">= 2.7.3"
+    },
+    {
+      "name": "puppetlabs/ruby_task_helper",
+      "version_requirement": ">= 0.5.1"
     }
   ],
   "operatingsystem_support": [

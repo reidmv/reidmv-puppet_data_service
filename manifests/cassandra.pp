@@ -1,7 +1,8 @@
 class puppet_data_service::cassandra (
   String $seeds          = getvar('facts.ipaddress'),
   String $listen_address = getvar('facts.ipaddress'),
-  String $dc    = 'DC1',
+  String $dc             = 'DC1',
+  String $storage_port   = '7000',
 ) {
 
   # BUG https://issues.apache.org/jira/browse/CASSANDRA-15273
@@ -53,15 +54,16 @@ class puppet_data_service::cassandra (
   }
 
   class { 'cassandra':
-    package_name                    => 'cassandra',
-    service_ensure                  => 'running',
-    dc                              => $dc,
-    settings                        => {
+    package_name   => 'cassandra',
+    service_ensure => 'running',
+    dc             => $dc,
+    settings       => {
       'cluster_name'                => 'PuppetDataCluster',
       'endpoint_snitch'             => 'GossipingPropertyFileSnitch',
       'commitlog_directory'         => '/var/lib/cassandra/commitlog',
       'hints_directory'             => '/var/lib/cassandra/hints',
       'saved_caches_directory'      => '/var/lib/cassandra/saved_caches',
+      'storage_port'                => $storage_port,
       'commitlog_sync'              => 'periodic',
       'commitlog_sync_period_in_ms' => '10000',
       'num_tokens'                  => 256,
@@ -104,7 +106,7 @@ class puppet_data_service::cassandra (
           'PRIMARY KEY' => '(name)'
         },
       },
-      'nodedata' => {
+      'nodedata'     => {
         keyspace => 'puppet',
         columns  => {
           certname      => 'text',
@@ -114,7 +116,7 @@ class puppet_data_service::cassandra (
           'PRIMARY KEY' => '(certname)'
         },
       },
-      'hieradata' => {
+      'hieradata'    => {
         keyspace => 'puppet',
         columns  => {
           level         => 'text',
