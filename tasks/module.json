@@ -1,0 +1,33 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Perform data operations on modules in Puppet environments",
+  "parameters": {
+    "operation": {
+      "type": "Enum[list, add, modify, remove]",
+      "description": "Which operation to perform"
+    },
+    "environment": {
+      "type": "String",
+      "description": "Which Puppet environment to operate on"
+    },
+    "name": {
+      "type": "Optional[String]",
+      "description": "Which module to operate on"
+    },
+    "type": {
+      "type": "Optional[Enum[git, forge]]",
+      "description": "The module type"
+    },
+    "remote": {
+      "type": "Optional[String]",
+      "description": "The git source clone URL for the module"
+    },
+    "version": {
+      "type": "Optional[String]",
+      "description": "The version ref to deploy the module at"
+    }
+  },
+  "files": ["ruby_task_helper/files/task_helper.rb"],
+  "input_method": "stdin"
+}

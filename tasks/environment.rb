@@ -5,7 +5,7 @@ require 'socket'
 require 'cassandra'
 require 'set'
 
-class SetNodeData < TaskHelper
+class EnvironmentData < TaskHelper
   def task(operation:,
            name: nil,
            type: 'bare',
@@ -29,7 +29,7 @@ class SetNodeData < TaskHelper
 
   def add(opts)
     statement = @session.prepare(<<-CQL).bind([opts[:name], opts[:type], opts[:remote], opts[:version]])
-      INSERT INTO puppet.environments (name, type, remote, version)
+      INSERT INTO environments (name, type, remote, version)
       VALUES (?, ?, ?, ?);
     CQL
 
@@ -43,7 +43,7 @@ class SetNodeData < TaskHelper
     set = opts.select { |key,val| [:type, :remote, :version].include?(key) && !val.nil? }.keys
 
     statement = @session.prepare(<<-"CQL").bind(set.map { |key| opts[key] } << opts[:name])
-      UPDATE puppet.environments
+      UPDATE environments
       SET #{set.map { |key| key.to_s + ' = ?' }.join(',')}
       WHERE name = ?;
     CQL
@@ -55,7 +55,7 @@ class SetNodeData < TaskHelper
 
   def remove(opts)
     statement = @session.prepare(<<-CQL).bind([opts[:name]])
-      DELETE FROM puppet.environments WHERE name = ?;
+      DELETE FROM environments WHERE name = ?;
     CQL
 
     result = @session.execute(statement)
@@ -66,5 +66,5 @@ class SetNodeData < TaskHelper
 end
 
 if $PROGRAM_NAME == __FILE__
-  SetNodeData.run
+  EnvironmentData.run
 end
