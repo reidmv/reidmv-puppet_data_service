@@ -62,7 +62,7 @@ class EnvironmentData < TaskHelper
     result = @session.execute(statement)
 
     # If we get this far, it probably worked?
-    { 'removed' => result.size }
+    { 'remove' => 'submitted' }
   end
 end
 
