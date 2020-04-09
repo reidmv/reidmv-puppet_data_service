@@ -8,7 +8,7 @@ require 'set'
 class EnvironmentData < TaskHelper
   def task(operation:,
            name: nil,
-           type: 'bare',
+           type: nil,
            source:  nil,
            version: nil,
            **kwargs)
@@ -21,6 +21,7 @@ class EnvironmentData < TaskHelper
   end
 
   def list(opts)
+    opts[:type] ||= 'bare'
     statement = @session.prepare('SELECT name, type, source, version FROM environments')
     list      = @session.execute(statement).to_a.map(&:compact)
 
