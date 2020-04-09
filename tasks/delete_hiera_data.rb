@@ -10,7 +10,7 @@ class DeleteHieraData < TaskHelper
            keys:,
            **_kwargs)
 
-    cluster = Cassandra.cluster(hosts: [Socket.gethostname])
+    cluster = Cassandra.cluster(hosts: [Facter.value('ipaddress')])
 
     keyspace = 'puppet'
     session  = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cqlsh $(hostname -f) <<EOF
+cqlsh $(facter ipaddress) <<EOF
   INSERT INTO puppet.nodedata (certname, environment, release)
   VALUES ('testnode1.example.com', 'production', 'r42');
 
