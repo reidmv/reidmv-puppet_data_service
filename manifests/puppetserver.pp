@@ -1,9 +1,11 @@
 class puppet_data_service::puppetserver {
 
-  $hosts = puppetdb_query(@(PQL)).map |$rsrc| { $rsrc['certname'] }.sort
-    resources[certname] {
-      type = "Class" and
-      title = "Puppet_data_service::Cassandra" }
+  $hosts = puppetdb_query(@(PQL)).map |$fact| { $fact['value'] }.sort
+    facts[value] {
+      name = 'ipaddress' and resources {
+        type = 'Class' and title = 'Puppet_data_service::Cassandra'
+      } 
+    }
     | PQL
 
   $gem_build_dependencies = (
@@ -15,8 +17,8 @@ class puppet_data_service::puppetserver {
   $resource_dependencies = flatten([
     ['puppet_gem', 'puppetserver_gem'].map |$provider| {
       package { "${provider} cassandra-driver":
-        name     => 'cassandra-driver',
         ensure   => present,
+        name     => 'cassandra-driver',
         provider => $provider,
         require  => $gem_build_dependencies,
       }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cqlsh $(hostname -f) <<EOF
+cqlsh $(facter ipaddress) <<EOF
   CREATE KEYSPACE IF NOT EXISTS puppet WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'DC1' : 2, 'DC2' : 2 };
 
   CREATE TABLE IF NOT EXISTS puppet.nodedata (
