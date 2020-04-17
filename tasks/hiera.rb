@@ -20,9 +20,9 @@ class EnvironmentData < TaskHelper
 
   def list(opts)
     statement = @session.prepare('SELECT DISTINCT level FROM hieradata')
-    data      = @session.execute(statement).to_a.map(&:compact)
+    data      = @session.execute(statement)
 
-    { 'levels' => data.map { |row| row['level'] } }
+    { 'levels' => data.rows.map { |row| row['level'] } }
   end
 
   def show(opts)
