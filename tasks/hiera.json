@@ -1,0 +1,25 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Perform data operations on Hiera data in the data service",
+  "parameters": {
+    "operation": {
+      "type": "Enum[list, show, set, unset]",
+      "description": "Which operation to perform"
+    },
+    "level": {
+      "type": "Optional[String]",
+      "description": "The hiera level to operate on"
+    },
+    "data": {
+      "type": "Optional[Hash[String, Data]]",
+      "description": "The hash of key/value pairs to set as data at the specified level"
+    },
+    "keys": {
+      "type": "Optional[Array[String]]",
+      "description": "The array of key names to operate on"
+    }
+  },
+  "files": ["ruby_task_helper/files/task_helper.rb"],
+  "input_method": "stdin"
+}
