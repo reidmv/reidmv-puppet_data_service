@@ -1,0 +1,29 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Perform data operations on Puppet node data",
+  "parameters": {
+    "operation": {
+      "type": "Enum[list, show, add, modify, remove]",
+      "description": "Which operation to perform"
+    },
+    "name": {
+      "type": "Optional[String]",
+      "description": "Which Puppet node to operate on"
+    },
+    "release": {
+      "type": "Optional[String]",
+      "description": "The code release version for the node"
+    },
+    "classes": {
+      "type": "Optional[Array[String]]",
+      "description": "A list of classes for the node"
+    },
+    "userdata": {
+      "type": "Optional[Hash]",
+      "description": "A hash of user-specified data for the node"
+    }
+  },
+  "files": ["ruby_task_helper/files/task_helper.rb"],
+  "input_method": "stdin"
+}
