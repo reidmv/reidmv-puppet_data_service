@@ -5,7 +5,7 @@ require 'facter'
 require 'cassandra'
 
 class EnvironmentData < TaskHelper
-  def task(operation:,
+  def task(op:,
            level: nil,
            data: nil,
            keys: nil,
@@ -15,7 +15,7 @@ class EnvironmentData < TaskHelper
     keyspace = 'puppet'
     @session = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
-    send(operation, level: level, data: data, keys: keys)
+    send(op, level: level, data: data, keys: keys)
   end
 
   def list(opts)

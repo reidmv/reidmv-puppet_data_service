@@ -3,7 +3,7 @@
   "supports_noop": false,
   "description": "Perform data operations on Puppet environments",
   "parameters": {
-    "operation": {
+    "op": {
       "type": "Enum[list, add, modify, remove]",
       "description": "Which operation to perform"
     },

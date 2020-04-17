@@ -6,7 +6,7 @@ require 'cassandra'
 require 'set'
 
 class EnvironmentData < TaskHelper
-  def task(operation:,
+  def task(op:,
            name: nil,
            type: nil,
            source:  nil,
@@ -17,7 +17,7 @@ class EnvironmentData < TaskHelper
     keyspace = 'puppet'
     @session = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
-    send(operation, name: name, type: type, source: source, version: version)
+    send(op, name: name, type: type, source: source, version: version)
   end
 
   def list(opts)

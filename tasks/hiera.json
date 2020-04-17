@@ -3,7 +3,7 @@
   "supports_noop": false,
   "description": "Perform data operations on Hiera data in the data service",
   "parameters": {
-    "operation": {
+    "op": {
       "type": "Enum[list, show, set, unset]",
       "description": "Which operation to perform"
     },
