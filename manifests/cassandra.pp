@@ -109,11 +109,11 @@ class puppet_data_service::cassandra (
       'nodedata'     => {
         keyspace => 'puppet',
         columns  => {
-          certname      => 'text',
-          environment   => 'text',
+          name          => 'text',
           release       => 'text',
           classes       => 'set<text>',
-          'PRIMARY KEY' => '(certname)'
+          userdata      => 'text',
+          'PRIMARY KEY' => '(name)'
         },
       },
       'hieradata'    => {
