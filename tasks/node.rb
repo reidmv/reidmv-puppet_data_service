@@ -8,8 +8,8 @@ require 'set'
 class NodeData < TaskHelper
   def task(op:,
            name: nil,
-           release: nil,
-           classes:  nil,
+           puppet_environment: nil,
+           puppet_classes:  nil,
            userdata: nil,
            **kwargs)
 
@@ -17,7 +17,7 @@ class NodeData < TaskHelper
     keyspace = 'puppet'
     @session = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
-    send(op, name: name, release: release, classes: classes, userdata: userdata)
+    send(op, name: name, puppet_environment: puppet_environment, puppet_classes: puppet_classes, userdata: userdata)
   end
 
   def list(opts)
@@ -32,7 +32,7 @@ class NodeData < TaskHelper
     data      = @session.execute(statement).first
 
     # Convert the Ruby Set object into an array
-    data['classes'] = data.delete('classes').to_a unless data.nil? || data['classes'].nil?
+    data['puppet_classes'] = data.delete('puppet_classes').to_a unless data.nil? || data['puppet_classes'].nil?
     data['userdata'] = JSON.parse(data.delete('userdata')) unless data.nil? || data['userdata'].nil?
 
     { 'node' => data }
@@ -40,13 +40,13 @@ class NodeData < TaskHelper
 
   def add(opts)
     statement = @session.prepare(<<-CQL)
-      INSERT INTO nodedata (name, release, classes, userdata)
+      INSERT INTO nodedata (name, puppet_environment, puppet_classes, userdata)
       VALUES (?, ?, ?, ?);
     CQL
 
     @session.execute(statement.bind([opts[:name],
-                                     opts[:release],
-                                     opts[:classes].to_set,
+                                     opts[:puppet_environment],
+                                     opts[:puppet_classes].to_set,
                                      opts[:userdata].to_json]))
 
     # If we get this far, it worked!
@@ -54,8 +54,8 @@ class NodeData < TaskHelper
   end
 
   def modify(opts)
-    set = opts.select { |key,val| [:release, :classes, :userdata].include?(key) && !val.nil? }.keys
-    set['classes'] = opts.delete('classes').to_set if set['classes']
+    set = opts.select { |key,val| [:puppet_environment, :puppet_classes, :userdata].include?(key) && !val.nil? }.keys
+    set['puppet_classes'] = opts.delete('puppet_classes').to_set if set['puppet_classes']
     set['userdata'] = opts.delete('userdata').to_json if set['userdata']
 
     statement = @session.prepare(<<-"CQL").bind(set.map { |key| opts[key] } << opts[:name])

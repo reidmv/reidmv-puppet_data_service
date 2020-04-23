@@ -13,7 +13,7 @@ class PuppetDataClient
   end
 
   def get_nodedata(certname:)
-    statement = @session.prepare('SELECT json classes,environment,release FROM nodedata WHERE certname=?').bind([certname])
+    statement = @session.prepare('SELECT json puppet_environment,puppet_classes,userdata FROM nodedata WHERE name = ?').bind([certname])
     result    = @session.execute(statement)
 
     if result.first.nil?

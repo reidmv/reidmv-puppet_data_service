@@ -5,7 +5,7 @@ require 'facter'
 require 'cassandra'
 require 'set'
 
-class EnvironmentData < TaskHelper
+class PuppetEnvironmentData < TaskHelper
   def task(op:,
            name: nil,
            type: nil,
@@ -22,15 +22,15 @@ class EnvironmentData < TaskHelper
 
   def list(opts)
     opts[:type] ||= 'bare'
-    statement = @session.prepare('SELECT name, type, source, version FROM environments')
+    statement = @session.prepare('SELECT name, type, source, version FROM puppet_environments')
     list      = @session.execute(statement).to_a.map(&:compact)
 
-    { 'environments' => list }
+    { 'puppet_environments' => list }
   end
 
   def add(opts)
     statement = @session.prepare(<<-CQL).bind([opts[:name], opts[:type], opts[:source], opts[:version]])
-      INSERT INTO environments (name, type, source, version)
+      INSERT INTO puppet_environments (name, type, source, version)
       VALUES (?, ?, ?, ?);
     CQL
 
@@ -44,7 +44,7 @@ class EnvironmentData < TaskHelper
     set = opts.select { |key,val| [:type, :source, :version].include?(key) && !val.nil? }.keys
 
     statement = @session.prepare(<<-"CQL").bind(set.map { |key| opts[key] } << opts[:name])
-      UPDATE environments
+      UPDATE puppet_environments
       SET #{set.map { |key| key.to_s + ' = ?' }.join(',')}
       WHERE name = ?;
     CQL
@@ -56,7 +56,7 @@ class EnvironmentData < TaskHelper
 
   def remove(opts)
     statement = @session.prepare(<<-CQL).bind([opts[:name]])
-      DELETE FROM environments WHERE name = ?;
+      DELETE FROM puppet_environments WHERE name = ?;
     CQL
 
     result = @session.execute(statement)
@@ -67,5 +67,5 @@ class EnvironmentData < TaskHelper
 end
 
 if $PROGRAM_NAME == __FILE__
-  EnvironmentData.run
+  PuppetEnvironmentData.run
 end
