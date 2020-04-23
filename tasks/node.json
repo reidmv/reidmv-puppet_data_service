@@ -11,11 +11,11 @@
       "type": "Optional[String]",
       "description": "Which Puppet node to operate on"
     },
-    "release": {
+    "puppet_environment": {
       "type": "Optional[String]",
-      "description": "The code release version for the node"
+      "description": "The puppet environment to assign the node to"
     },
-    "classes": {
+    "puppet_classes": {
       "type": "Optional[Array[String]]",
       "description": "A list of classes for the node"
     },

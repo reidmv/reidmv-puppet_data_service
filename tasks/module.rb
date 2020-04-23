@@ -7,7 +7,7 @@ require 'set'
 
 class ModuleData < TaskHelper
   def task(op:,
-           environment:,
+           puppet_environment:,
            name: nil,
            type: nil,
            source:  nil,
@@ -18,12 +18,12 @@ class ModuleData < TaskHelper
     keyspace = 'puppet'
     @session = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
-    send(op, environment: environment, name: name, type: type, source: source, version: version)
+    send(op, puppet_environment: puppet_environment, name: name, type: type, source: source, version: version)
   end
 
   def list(opts)
-    statement = @session.prepare(<<-CQL).bind([opts[:environment]])
-      SELECT modules FROM environments
+    statement = @session.prepare(<<-CQL).bind([opts[:puppet_environment]])
+      SELECT modules FROM puppet_environments
       WHERE name = ?
     CQL
 
@@ -31,7 +31,7 @@ class ModuleData < TaskHelper
 
     case 
     when result.nil?
-      'no such environment'
+      'no such puppet_environment'
     when result['modules'].nil?
       { 'modules' => [] }
     else
@@ -42,8 +42,8 @@ class ModuleData < TaskHelper
   def add(opts)
     moddata = [:type, :version, :source].map { |key| [key.to_s, opts[key]] }.to_h.compact.to_json
 
-    statement = @session.prepare(<<-CQL).bind([opts[:name], moddata, opts[:environment]])
-      UPDATE environments
+    statement = @session.prepare(<<-CQL).bind([opts[:name], moddata, opts[:puppet_environment]])
+      UPDATE puppet_environments
       SET modules[?] = ?
       WHERE name = ?;
     CQL
@@ -55,9 +55,9 @@ class ModuleData < TaskHelper
   end
 
   def modify(opts)
-    # Retrieve the current value of the module from the environment
-    select = @session.prepare(<<-CQL).bind([opts[:environment]])
-      SELECT modules FROM environments
+    # Retrieve the current value of the module from the puppet_environment
+    select = @session.prepare(<<-CQL).bind([opts[:puppet_environment]])
+      SELECT modules FROM puppet_environments
       WHERE name = ?;
     CQL
 
@@ -68,8 +68,8 @@ class ModuleData < TaskHelper
     update = opts.select { |key,val| [:type, :source, :version].include?(key) && !val.nil? }
     new = JSON.parse(current).merge(update.map { |key,val| [key.to_s, val] }.to_h)
 
-    update = @session.prepare(<<-"CQL").bind([opts[:name], new.to_json, opts[:environment]])
-      UPDATE environments
+    update = @session.prepare(<<-"CQL").bind([opts[:name], new.to_json, opts[:puppet_environment]])
+      UPDATE puppet_environments
       SET modules[?] = ?
       WHERE name = ?;
     CQL
@@ -80,8 +80,8 @@ class ModuleData < TaskHelper
   end
 
   def remove(opts)
-    statement = @session.prepare(<<-CQL).bind([opts[:name], opts[:environment]])
-      DELETE modules[?] FROM environments WHERE name = ?;
+    statement = @session.prepare(<<-CQL).bind([opts[:name], opts[:puppet_environment]])
+      DELETE modules[?] FROM puppet_environments WHERE name = ?;
     CQL
 
     result = @session.execute(statement)

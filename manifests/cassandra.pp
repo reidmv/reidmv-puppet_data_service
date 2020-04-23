@@ -95,7 +95,7 @@ class puppet_data_service::cassandra (
       },
     },
     tables         => {
-      'environments' => {
+      'puppet_environments' => {
         keyspace => 'puppet',
         columns  => {
           'name'        => 'text',
@@ -106,17 +106,17 @@ class puppet_data_service::cassandra (
           'PRIMARY KEY' => '(name)'
         },
       },
-      'nodedata'     => {
+      'nodedata' => {
         keyspace => 'puppet',
         columns  => {
-          name          => 'text',
-          release       => 'text',
-          classes       => 'set<text>',
-          userdata      => 'text',
-          'PRIMARY KEY' => '(name)'
+          name               => 'text',
+          puppet_environment => 'text',
+          puppet_classes     => 'set<text>',
+          userdata           => 'text',
+          'PRIMARY KEY'      => '(name)'
         },
       },
-      'hieradata'    => {
+      'hieradata' => {
         keyspace => 'puppet',
         columns  => {
           level         => 'text',

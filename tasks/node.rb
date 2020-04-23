@@ -6,61 +6,53 @@ require 'cassandra'
 require 'set'
 
 class NodeData < TaskHelper
-  def task(op:,
-           name: nil,
-           release: nil,
-           classes:  nil,
-           userdata: nil,
-           **kwargs)
-
+  def task(op:, **kwargs)
     cluster  = Cassandra.cluster(hosts: [Facter.value('ipaddress')])
     keyspace = 'puppet'
     @session = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
 
-    send(op, name: name, release: release, classes: classes, userdata: userdata)
+    send(op, **kwargs)
   end
 
-  def list(opts)
+  def list(**kwargs)
     statement = @session.prepare('SELECT name FROM nodedata')
     data      = @session.execute(statement)
 
     { 'nodes' => data.rows.map { |row| row['name'] } }
   end
 
-  def show(opts)
-    statement = @session.prepare('SELECT * FROM nodedata WHERE name = ?').bind([opts[:name]])
+  def show(name:, **kwargs)
+    statement = @session.prepare('SELECT * FROM nodedata WHERE name = ?').bind([name])
     data      = @session.execute(statement).first
 
     # Convert the Ruby Set object into an array
-    data['classes'] = data.delete('classes').to_a unless data.nil? || data['classes'].nil?
+    data['puppet_classes'] = data.delete('puppet_classes').to_a unless data.nil? || data['puppet_classes'].nil?
     data['userdata'] = JSON.parse(data.delete('userdata')) unless data.nil? || data['userdata'].nil?
 
     { 'node' => data }
   end
 
-  def add(opts)
+  def add(name:, puppet_environment: nil, puppet_classes: [], userdata: {}, **kwargs)
     statement = @session.prepare(<<-CQL)
-      INSERT INTO nodedata (name, release, classes, userdata)
+      INSERT INTO nodedata (name, puppet_environment, puppet_classes, userdata)
       VALUES (?, ?, ?, ?);
     CQL
 
-    @session.execute(statement.bind([opts[:name],
-                                     opts[:release],
-                                     opts[:classes].to_set,
-                                     opts[:userdata].to_json]))
+    @session.execute(statement.bind([name, puppet_environment, puppet_classes.to_set, userdata.to_json]))
 
     # If we get this far, it worked!
     { 'add' => 'submitted' }
   end
 
-  def modify(opts)
-    set = opts.select { |key,val| [:release, :classes, :userdata].include?(key) && !val.nil? }.keys
-    set['classes'] = opts.delete('classes').to_set if set['classes']
-    set['userdata'] = opts.delete('userdata').to_json if set['userdata']
+  def modify(**kwargs)
+    set = kwargs.select { |key,val| [:puppet_environment, :puppet_classes, :userdata].include?(key) && !val.nil? }
+    set[:puppet_classes] = set.delete(:puppet_classes).to_set if set[:puppet_classes]
+    set[:userdata] = set.delete(:userdata).to_json if set[:userdata]
 
-    statement = @session.prepare(<<-"CQL").bind(set.map { |key| opts[key] } << opts[:name])
+    ordered_keys = set.keys
+    statement = @session.prepare(<<-"CQL").bind(ordered_keys.map { |key| set[key] } << kwargs[:name])
       UPDATE nodedata
-      SET #{set.map { |key| key.to_s + ' = ?' }.join(',')}
+      SET #{ordered_keys.map { |key| key.to_s + ' = ?' }.join(',')}
       WHERE name = ?;
     CQL
 
@@ -69,8 +61,8 @@ class NodeData < TaskHelper
     { 'modify' => 'submitted' }
   end
 
-  def remove(opts)
-    statement = @session.prepare(<<-CQL).bind([opts[:name]])
+  def remove(name:, **kwargs)
+    statement = @session.prepare(<<-CQL).bind([name])
       DELETE FROM nodedata WHERE name = ?;
     CQL
 
