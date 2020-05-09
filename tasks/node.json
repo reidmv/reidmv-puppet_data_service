@@ -4,7 +4,7 @@
   "description": "Perform data operations on Puppet node data",
   "parameters": {
     "op": {
-      "type": "Enum[list, show, add, modify, remove]",
+      "type": "Enum[list, get, add, modify, remove]",
       "description": "Which operation to perform"
     },
     "name": {

@@ -1,0 +1,1 @@
+require 'puppet_data_service/databases/pds_cassandra'

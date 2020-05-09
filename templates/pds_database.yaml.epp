@@ -1,0 +1,3 @@
+<%- | String $database | -%>
+---
+pds_database: <%= $database %>

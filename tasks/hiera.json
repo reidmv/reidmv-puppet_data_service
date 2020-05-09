@@ -4,7 +4,7 @@
   "description": "Perform data operations on Hiera data in the data service",
   "parameters": {
     "op": {
-      "type": "Enum[list, show, set, unset]",
+      "type": "Enum[list, get, add, remove]",
       "description": "Which operation to perform"
     },
     "level": {
