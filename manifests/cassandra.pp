@@ -4,20 +4,8 @@ class puppet_data_service::cassandra (
   String $dc             = 'DC1',
   String $storage_port   = '7000',
 ) {
-  file { '/opt/puppetlabs/facter/facts.d':
-    ensure => directory,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-  file { '/opt/puppetlabs/facter/facts.d/pds_database.yaml':
-    ensure  => file,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    content => epp('puppet_data_service/pds_database.yaml.epp', {
-      database => 'cassandra',
-    })
+  class { 'puppet_data_service::pds_fact':
+    database => 'cassandra',
   }
   class { 'puppet_data_service::gem_install':
     puppet_master => false,

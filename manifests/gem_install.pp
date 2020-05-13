@@ -1,4 +1,4 @@
-# Builds and installs the puppet_data_service gem
+# Builds and installs the puppet_data_service gem locally
 class puppet_data_service::gem_install (
   Boolean $puppet_master = false,
   String $gemdir = '/etc/puppetlabs/puppet/puppet_data_service',
@@ -13,7 +13,7 @@ class puppet_data_service::gem_install (
     source  => 'puppet:///modules/puppet_data_service/puppet_data_service',
   }
   exec { 'build_gem':
-    command     => "${agentbin}/gem build -C ${gemdir}",
+    command     => "${agentgem} build -C ${gemdir}",
     refreshonly => true,
     subscribe   => File[$gemdir],
   }

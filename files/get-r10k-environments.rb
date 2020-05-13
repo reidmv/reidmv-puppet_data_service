@@ -7,7 +7,7 @@ require 'yaml'
 if $PROGRAM_NAME == __FILE__
   config = YAML.load_file('/etc/puppetlabs/puppet/puppet-data-service.yaml')
 
-  client = PuppetDataService.connect(hosts: config['hosts'])
+  client = PuppetDataService.connect(Facter.value['pds_database'], hosts: config['hosts'])
   data = client.execute('get', 'r10k_environments')
 
   puts data.to_json

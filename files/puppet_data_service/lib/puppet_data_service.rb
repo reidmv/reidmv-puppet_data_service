@@ -1,11 +1,17 @@
 require "puppet_data_service/factory"
 require "puppet_data_service/version"
 module PuppetDataService
-  SUPPORTED_DATABASES = [:cassandra, :mongodb].freeze
+  SUPPORTED_DATABASES = ['cassandra', 'mongodb'].freeze
 
   ALL_OP_VERBS = ['list', 'get', 'add', 'modify', 'remove'].freeze
 
-  ALL_OP_TARGETS = ['hiera', 'module', 'node', 'puppet_environment', 'nodedata', 'r10k_environments'].freeze
+  ALL_OP_TARGETS = ['hiera',
+                    'module',
+                    'node',
+                    'puppet_environment',
+                    'nodedata',
+                    'r10k_environments',
+                    'hiera_data'].freeze
 
   ALL_OP_SYMBOLS = [:list_hiera,
                     :get_hiera,
@@ -24,7 +30,8 @@ module PuppetDataService
                     :modify_puppet_environment,
                     :remove_puppet_environment,
                     :get_nodedata,
-                    :get_r10k_environments].freeze
+                    :get_r10k_environments,
+                    :get_hiera_data].freeze
   
   PDS_DATABASES_DIR = 'puppet_data_service/databases'
 

@@ -3,13 +3,11 @@ module PuppetDataService
         # The abstract class for creating database objects.
         # This class is the interface used by the DatabaseContext
         # to call our strategies (concrete database objects).
-        class DatabaseBase
+        class PdsDatabase
 
             @@plugin_type = :pds_database
 
             # @abstract
-            #
-            # @param [Array] hosts
             def initialize(_hosts:, _keyspace:, **_kwargs)
                 raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}"
             end
@@ -107,6 +105,11 @@ module PuppetDataService
 
             # @abstract
             def get_r10k_environments
+                raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}"
+            end
+
+            # @abstract
+            def get_hiera_data(_kwargs)
                 raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}"
             end
         end

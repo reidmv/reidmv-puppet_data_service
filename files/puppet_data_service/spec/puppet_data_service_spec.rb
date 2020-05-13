@@ -10,4 +10,10 @@ RSpec.describe PuppetDataService do
     context = PuppetDataService.connect(database: 'cassandra', hosts: ['192.168.0.1'])
     expect(context).not_to be nil
   end
+
+  it "throws ValidationError for invalid database" do
+    expect { 
+      PuppetDataService.connect(database: 'fake', hosts: ['192.168.0.1']) 
+    }.to raise_error(PuppetDataService::Errors::ValidationError)
+  end
 end

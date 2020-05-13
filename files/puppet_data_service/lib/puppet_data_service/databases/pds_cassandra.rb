@@ -1,16 +1,31 @@
-require 'puppet_data_service/databases/database_base'
+require 'puppet_data_service/databases/pds_database'
 require 'cassandra'
 require 'json'
 require 'set'
 
 module PuppetDataService
     module Databases
-        class PdsCassandra < DatabaseBase
+
+        # Implements a Cassandra database backend
+        # 
+        # @param [Array] hosts
+        # @param [String] keyspace
+        class PdsCassandra < PdsDatabase
 
             def initialize(hosts:, keyspace: 'puppet')
+                @hosts = hosts
                 @keyspace = keyspace
                 @cluster = Cassandra.cluster(hosts: hosts)
-                @session = @cluster.connect(@keyspace) # create session, optionally scoped to a keyspace, to execute queries
+                begin
+                    @session = @cluster.connect(@keyspace) # create session, optionally scoped to a keyspace, to execute queries
+                rescue Cassandra::Error => e
+                    raise PuppetDataService::Errors::ConnError.new(
+                        'Could not connect to the Cassandra database!',
+                        e,
+                        dbtype: 'cassandra',
+                        hosts: @hosts
+                    )
+                end
             end
 
             # TASK METHODS
@@ -228,8 +243,8 @@ module PuppetDataService
 
             # SCRIPT METHODS
 
-            def get_nodedata(certname:)
-                statement = @session.prepare('SELECT json puppet_environment,puppet_classes,userdata FROM nodedata WHERE name = ?').bind([certname])
+            def get_nodedata(kwargs)
+                statement = @session.prepare('SELECT json puppet_environment,puppet_classes,userdata FROM nodedata WHERE name = ?').bind([kwargs['certname']])
                 result    = @session.execute(statement)
             
                 if result.first.nil?
@@ -242,7 +257,6 @@ module PuppetDataService
             def get_r10k_environments
                 statement = @session.prepare('SELECT JSON * FROM environments')
                 results   = @session.execute(statement)
-            
                 # Transform JSON formatted result into a Ruby hash
                 environments = results.map do |result|
                     data = JSON.parse(result['[json]'])
@@ -255,28 +269,34 @@ module PuppetDataService
                                       end
                     [data.delete('name'), data]
                 end.to_h
-            
                 # Transform data to R10k format
                 environments.reduce({}) do |e_memo,(e_name,e_data)|
                     e_data['remote'] = e_data.delete('source')
                     e_data['ref']    = e_data.delete('version')
-            
                     e_data['modules'] = e_data['modules'].reduce({}) do |m_memo,(m_name,m_data)|
                         m_data['git'] = m_data.delete('source')
                         m_data['ref']    = m_data.delete('version')
-            
                         m_data.delete('type')
-            
                         # If there's a source, save as hash. Otherwise, save as version (forge)
                         m_memo[m_name] = m_data['git'] ? m_data.compact : m_data['ref']
                         m_memo
                     end
-            
                     e_memo[e_name] = e_data.compact
                     e_memo
                 end
-            
                 environments
+            end
+
+            # TRUSTED EXTERNAL COMMAND METHODS
+
+            def get_hiera_data(kwargs)
+                uri = kwargs['uri']
+                data = @session.execute(
+                    'SELECT key,value FROM hieradata where level=%s' % "$$#{uri}$$",
+                  ).rows.map { |row|
+                    { row['key'] => row['value'] }
+                  }.reduce({}, :merge)  
+                data
             end
         end
     end
