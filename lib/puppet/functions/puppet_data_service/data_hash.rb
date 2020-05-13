@@ -43,8 +43,17 @@ Puppet::Functions.create_function(:'puppet_data_service::data_hash') do
 
     session = adapter.session
 
+<<<<<<< HEAD
     data = session.execute('get', 'hiera_data', uri: uri)
     
+=======
+    data = session.execute(
+      'SELECT key,value FROM hieradata where level=%s' % "$$#{uri}$$",
+    ).rows.map { |row|
+      { row['key'] => JSON.parse(row['value']) }
+    }.reduce({}, :merge)
+
+>>>>>>> c24893c0fe2379b1f62163dd48f40a8d9616e17b
     data
   end
 end
