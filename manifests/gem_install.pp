@@ -18,13 +18,13 @@ class puppet_data_service::gem_install (
     subscribe   => File[$gemdir],
   }
   exec { 'install_to_agent_ruby':
-    command     => "cd ${gemdir} && ${agentgem} install --local puppet_data_service",
+    command     => "/bin/cd ${gemdir} && ${agentgem} install --local puppet_data_service",
     refreshonly => true,
     subscribe   => Exec['build_gem'],
   }
   if $puppet_master {
     exec { 'install_to_master_jruby':
-      command     => "cd ${gemdir} && ${puppetserver} gem install --local puppet_data_service",
+      command     => "/bin/cd ${gemdir} && ${puppetserver} gem install --local puppet_data_service",
       refreshonly => true,
       subscribe   => Exec['build_gem'],
     }
