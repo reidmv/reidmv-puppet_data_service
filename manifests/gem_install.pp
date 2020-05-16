@@ -5,15 +5,26 @@ class puppet_data_service::gem_install (
   String $agentgem = '/opt/puppetlabs/puppet/bin/gem',
   String $puppetserver = '/opt/puppetlabs/bin/puppetserver'
 ) {
+  package { 'git':
+    ensure => installed,
+  }
+
+  $gem_build_dependencies = (
+    package { ['make', 'automake', 'gcc', 'gcc-c++', 'kernel-devel']:
+      ensure => present,
+    }
+  )
+
   file { $gemdir:
     ensure  => directory,
     mode    => '0755',
     recurse => true,
     purge   => true,
     source  => 'puppet:///modules/puppet_data_service/puppet_data_service',
+    require => [Package['git'], $gem_build_dependencies],
   }
   exec { 'build_gem':
-    command     => "${agentgem} build -C ${gemdir}",
+    command     => "/bin/cd ${gemdir} && ${agentgem} build ${gemdir}/puppet_data_service.gemspec",
     refreshonly => true,
     subscribe   => File[$gemdir],
   }

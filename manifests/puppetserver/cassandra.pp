@@ -7,19 +7,12 @@ class puppet_data_service::puppetserver::cassandra {
     }
     | PQL
 
-  $gem_build_dependencies = (
-    package { ['make', 'automake', 'gcc', 'gcc-c++', 'kernel-devel']:
-      ensure => present,
-    }
-  )
-
   $resource_dependencies = flatten([
     ['puppet_gem', 'puppetserver_gem'].map |$provider| {
       package { "${provider} cassandra-driver":
         ensure   => present,
         name     => 'cassandra-driver',
         provider => $provider,
-        require  => $gem_build_dependencies,
       }
     },
 
