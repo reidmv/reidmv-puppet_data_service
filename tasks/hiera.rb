@@ -2,7 +2,7 @@
 
 require_relative '../../ruby_task_helper/files/task_helper.rb'
 require 'facter'
-require 'cassandra'
+require 'puppet_data_service'
 
 class EnvironmentData < TaskHelper
   def task(op:,
@@ -11,50 +11,12 @@ class EnvironmentData < TaskHelper
            keys: nil,
            **kwargs)
 
-    cluster  = Cassandra.cluster(hosts: [Facter.value('ipaddress')])
-    keyspace = 'puppet'
-    @session = cluster.connect(keyspace) # create session, optionally scoped to a keyspace, to execute queries
+    # create session, optionally scoped to a keyspace, to execute queries
+    @session = PuppetDatabaseService.connect(database: Facter.value['pds_database'],
+                                             hosts: Facter.value['ipaddress'])
+    @target = 'hiera'
 
-    send(op, level: level, data: data, keys: keys)
-  end
-
-  def list(opts)
-    statement = @session.prepare('SELECT DISTINCT level FROM hieradata')
-    data      = @session.execute(statement)
-
-    { 'levels' => data.rows.map { |row| row['level'] } }
-  end
-
-  def show(opts)
-    statement = @session.prepare('SELECT key,value FROM hieradata where level = ?').bind([opts[:level]])
-    data      = @session.execute(statement)
-
-    data.rows.map { |row| {row['key'] => row['value']} }.reduce({}, :merge)
-  end
-
-  def set(opts)
-    statement = @session.prepare(<<-CQL)
-      INSERT INTO hieradata (level, key, value)
-      VALUES (?, ?, ?);
-    CQL
-
-    futures = opts[:data].map do |key, value|
-      @session.execute_async(statement, arguments: [opts[:level], key.to_s, value.to_json])
-    end
-
-    { 'set' => futures.map(&:join).size }
-  end
-
-  def unset(opts)
-    statement = @session.prepare(<<-CQL)
-      DELETE FROM hieradata WHERE level = ? AND key = ?;
-    CQL
-
-    futures = opts[:keys].map do |key|
-      @session.execute_async(statement, arguments: [opts[:level], key.to_s])
-    end
-
-    { 'unset' => futures.map(&:join).size }
+    return @session.execute(op, @target, level: level, data: data, keys: keys)
   end
 end
 

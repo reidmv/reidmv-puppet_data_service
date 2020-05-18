@@ -4,7 +4,12 @@ class puppet_data_service::cassandra (
   String $dc             = 'DC1',
   String $storage_port   = '7000',
 ) {
-
+  class { 'puppet_data_service::pds_fact':
+    database => 'cassandra',
+  }
+  class { 'puppet_data_service::gem_install':
+    puppet_master => false,
+  }
   # BUG https://issues.apache.org/jira/browse/CASSANDRA-15273
   # Remove as soon as Cassandra 3.11.7 or newer is released
   package { 'patch':
@@ -106,7 +111,7 @@ class puppet_data_service::cassandra (
           'PRIMARY KEY' => '(name)'
         },
       },
-      'nodedata' => {
+      'nodedata'   => {
         keyspace => 'puppet',
         columns  => {
           name               => 'text',
@@ -116,7 +121,7 @@ class puppet_data_service::cassandra (
           'PRIMARY KEY'      => '(name)'
         },
       },
-      'hieradata' => {
+      'hieradata'   => {
         keyspace => 'puppet',
         columns  => {
           level         => 'text',

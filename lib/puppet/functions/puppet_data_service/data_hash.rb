@@ -1,12 +1,7 @@
 # /etc/puppetlabs/code/environments/production/modules/mymodule/lib/puppet/functions/mymodule/upcase.rb
 require 'json'
 require 'yaml'
-
-begin
-  require 'cassandra'
-rescue LoadError
-  raise Puppet::DataBinding::LookupError, '[puppet_data_service::data_hash] Must install cassandra-driver gem to use this backend'
-end
+require 'puppet_data_service'
 
 Puppet::Functions.create_function(:'puppet_data_service::data_hash') do
   dispatch :hiera_data do
@@ -34,10 +29,12 @@ Puppet::Functions.create_function(:'puppet_data_service::data_hash') do
       context.explain { '[puppet_data_service::data_hash] Database connection not cached...establishing...' }
       begin
         context.explain { "[puppet_data_service::data_hash] Database connection established to #{hosts.join(', ')}" }
-        adapter.session = Cassandra.cluster(hosts: hosts).connect('puppet')
-      rescue Cassandra::Error
+        adapter.session = PuppetDataService.connect(database: Facter.value['pds_database'],
+                                                    hosts: hosts)
+      rescue PuppetDataService::Error => e
         adapter.session = nil
         context.explain { '[puppet_data_service::data_hash] Failed to establish database connection' }
+        context.explain { "[puppet_data_service::data_hash][PuppetDataService::Error] #{e.message}"}
         return {}
       end
     else
@@ -46,12 +43,8 @@ Puppet::Functions.create_function(:'puppet_data_service::data_hash') do
 
     session = adapter.session
 
-    data = session.execute(
-      'SELECT key,value FROM hieradata where level=%s' % "$$#{uri}$$",
-    ).rows.map { |row|
-      { row['key'] => JSON.parse(row['value']) }
-    }.reduce({}, :merge)
-
+    data = session.execute('get', 'hiera_data', uri: uri)
+    
     data
   end
 end
