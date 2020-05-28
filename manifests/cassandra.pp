@@ -1,8 +1,9 @@
 class puppet_data_service::cassandra (
-  String $seeds          = getvar('facts.ipaddress'),
-  String $listen_address = getvar('facts.ipaddress'),
-  String $dc             = 'DC1',
-  String $storage_port   = '7000',
+  String $seeds               = getvar('facts.ipaddress'),
+  String $listen_address      = getvar('facts.ipaddress'),
+  String $dc                  = 'DC1',
+  String $storage_port        = '7000',
+  String $max_heap_size_in_mb = '256',
 ) {
 
   # BUG https://issues.apache.org/jira/browse/CASSANDRA-15273
@@ -81,6 +82,7 @@ class puppet_data_service::cassandra (
       }],
     },
   }
+
   class { 'cassandra::schema':
     cqlsh_password => 'cassandra',
     cqlsh_user     => 'cassandra',
@@ -106,7 +108,7 @@ class puppet_data_service::cassandra (
           'PRIMARY KEY' => '(name)'
         },
       },
-      'nodedata' => {
+      'nodedata'            => {
         keyspace => 'puppet',
         columns  => {
           name               => 'text',
@@ -116,7 +118,7 @@ class puppet_data_service::cassandra (
           'PRIMARY KEY'      => '(name)'
         },
       },
-      'hieradata' => {
+      'hieradata'           => {
         keyspace => 'puppet',
         columns  => {
           level         => 'text',
@@ -127,4 +129,28 @@ class puppet_data_service::cassandra (
       }
     }
   }
+
+  cassandra::file { "Set Java/Cassandra max heap size to ${max_heap_size_in_mb}.":
+    file       => 'cassandra-env.sh',
+    file_lines => {
+      'MAX_HEAP_SIZE' => {
+        line  => "MAX_HEAP_SIZE='${max_heap_size_in_mb}M'",
+        match => '^#?MAX_HEAP_SIZE=.*',
+      },
+    },
+  }
+
+  # for now, calculating a default heap_new_size to keep things simple
+  $heap_new_size = $max_heap_size_in_mb / 4
+
+  cassandra::file { "Set Java/Cassandra heap new size to ${heap_new_size}.":
+    file       => 'cassandra-env.sh',
+    file_lines => {
+      'HEAP_NEWSIZE' => {
+        line  => "HEAP_NEWSIZE='${heap_new_size}M'",
+        match => '^#?HEAP_NEWSIZE=.*',
+      },
+    },
+  }
+
 }
