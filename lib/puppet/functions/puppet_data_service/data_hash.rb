@@ -26,8 +26,8 @@ Puppet::Functions.create_function(:'puppet_data_service::data_hash') do
 
   def hiera_data(options, context)
     uri = options['uri']
-    hosts = hosts.nil? ? Array(Socket.gethostname) : Array(options['hosts'])
-
+    hosts = options.key?('hosts') ? Array(options['hosts']) : Array(Socket.gethostname)
+    
     adapter = sessionadapter.adapt(closure_scope.environment)
 
     if adapter.session.nil?
