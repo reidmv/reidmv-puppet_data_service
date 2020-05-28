@@ -52,5 +52,6 @@ class puppet_data_service::puppetserver {
     value   => '/etc/puppetlabs/puppet/get-nodedata.rb',
     section => 'master',
     require => $resource_dependencies,
+    notify  => Service['pe-puppetserver'],
   }
 }
