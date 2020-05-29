@@ -32,7 +32,7 @@ This module contains:
 
 ### `trusted_external_command`
 
-This module will deploy a ruby script `get-nodedata.rb` and configure it as the `trusted_external_command` in `puppet.conf`. Please note that when this setting is changed, the puppetserver service needs to be restarted.
+This module will deploy a ruby script `get-nodedata.rb` and configure it as the `trusted_external_command` in `puppet.conf`. Please note that when this setting is changed, the puppetserver service needs to be restarted, this module will take care of that automatically.
 
 This external command will be called by puppetserver twice per puppet run: once during pluginsync and once on catalog request. The script will be called with the certname of the node as the only argument. For example, suppose we just supplied these nodedata to the backend storage:
 ```
@@ -40,7 +40,7 @@ puppet task run puppet_data_service::node --params '{"op":"add", "name":"puppet.
 ```
 then, invoking the trusted external command should give:
 ```json
-/etc/puppetlabs/puppet/get-nodedata.rb puppetclassroom.puppet.com
+/etc/puppetlabs/puppet/get-nodedata.rb puppet.classroom.puppet.com
 {
     "node":{
         "puppet_environment":"penv",
@@ -152,27 +152,6 @@ PARAMETERS:
 - level : Optional[String]
     The hiera level to operate on
 You have new mail in /var/spool/mail/root
-```
-
-```
-puppet_data_service::module - Perform data operations on modules in Puppet environments
-
-USAGE:
-$ puppet task run puppet_data_service::module op=<value> puppet_environment=<value> [name=<value>] [source=<value>] [type=<value>] [version=<value>] <[--nodes, -n <node-names>] | [--query, -q <'query'>]>
-
-PARAMETERS:
-- op : Enum[list, add, modify, remove]
-    Which operation to perform
-- puppet_environment : String
-    Which Puppet environment to operate on
-- name : Optional[String]
-    Which module to operate on
-- source : Optional[String]
-    The source, e.g. git source clone URL, for the module
-- type : Optional[Enum[git, forge]]
-    The module type
-- version : Optional[String]
-    The version ref to deploy the module at
 ```
 
 ## Limitations
