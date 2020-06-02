@@ -30,7 +30,7 @@ class puppet_data_service::gem_install (
     subscribe   => File[$gemdir],
   }
   package { 'puppet_gem puppet_data_service':
-    ensure   => latest,
+    ensure   => $gemver,
     name     => 'puppet_data_service',
     provider => 'puppet_gem',
     source   => "${gemdir}/puppet_data_service-${gemver}.gem",
@@ -38,7 +38,7 @@ class puppet_data_service::gem_install (
   }
   if $puppet_master {
     package { 'puppetserver_gem puppet_data_service':
-      ensure   => latest,
+      ensure   => $gemver,
       name     => 'puppet_data_service',
       provider => 'puppetserver_gem',
       source   => "${gemdir}/puppet_data_service-${gemver}.gem",
