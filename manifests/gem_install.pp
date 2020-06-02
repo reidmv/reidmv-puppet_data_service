@@ -26,7 +26,7 @@ class puppet_data_service::gem_install (
   }
   exec { 'build_gem':
     command     => "/bin/cd ${gemdir} && ${agentgem} build ${gemdir}/puppet_data_service.gemspec",
-    refreshonly => true,
+    unless      => "[[ -f ${gemdir}/puppet_data_service-${gemver}.gem ]]",
     subscribe   => File[$gemdir],
   }
   package { 'puppet_gem puppet_data_service':

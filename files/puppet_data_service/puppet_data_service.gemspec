@@ -19,14 +19,9 @@ Gem::Specification.new do |spec|
   spec.metadata['changelog_uri'] = 'https://github.com/reidmv/reidmv-puppet_data_service'
 
   # Specify which files should be added to the gem when it is released.
-  
-  # This should circumvent needing a .git dir to build the gem
-  spec.files         = Dir["#{File.expand_path('..', __FILE__)}/**/*"]
-  
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  #spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
-  #  `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  #end
+  spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
+    Dir['**/*'].reject { |f| f.match(%r{^(test|spec|features)/}) }
+  end
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
