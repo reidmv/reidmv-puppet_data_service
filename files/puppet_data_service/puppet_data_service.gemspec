@@ -19,11 +19,14 @@ Gem::Specification.new do |spec|
   spec.metadata['changelog_uri'] = 'https://github.com/reidmv/reidmv-puppet_data_service'
 
   # Specify which files should be added to the gem when it is released.
+  
+  # This should circumvent needing a .git dir to build the gem
+  spec.files         = Dir["#{File.expand_path('..', __FILE__)}/**/*"]
+  
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  # TODO: I need to fix how files are added. Right now the build is only add version.rb
-  spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
-    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  end
+  #spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
+  #  `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  #end
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
@@ -31,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.9'
-  spec.add_dependency 'cassandra-driver', '~> 3.2'
-  spec.add_dependency 'mongo', '~> 2.12'
-  spec.add_dependency 'hocon', '~> 1.3.0'
+  spec.add_runtime_dependency 'cassandra-driver', '~> 3.2'
+  spec.add_runtime_dependency 'mongo', '~> 2.12'
+  spec.add_runtime_dependency 'hocon', '~> 1.3'
 end
