@@ -12,10 +12,11 @@ module PuppetDataService
     # @param [String] database
     # @param [Array] hosts
     # @param [Hash] opts
-    def self.database_context_factory(database:, hosts:, opts: nil)
+    def self.database_context_factory(database:, hosts:, db_config: {}, opts: nil)
         Validators::Databases.is_valid?(database)
         require Loaders.get_database_file(database) # Require database file by file path
         klass = "Pds#{database.capitalize()}"
+        Validators::Databases.is_valid_name?(klass)
         db_obj = eval("PuppetDataService::Databases::#{klass}").new(hosts: hosts)
         context = Contexts::DatabaseContext.new(db_obj)
         return context

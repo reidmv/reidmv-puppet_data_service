@@ -12,7 +12,7 @@ module PuppetDataService
         # @param [String] keyspace
         class PdsCassandra < PdsDatabase
 
-            def initialize(hosts:, keyspace: 'puppet')
+            def initialize(hosts:, db_config: {}, keyspace: 'puppet')
                 @hosts = hosts
                 @keyspace = keyspace
                 @cluster = Cassandra.cluster(hosts: hosts)
@@ -244,13 +244,18 @@ module PuppetDataService
             # SCRIPT METHODS
 
             def get_nodedata(kwargs)
-                statement = @session.prepare('SELECT json puppet_environment,puppet_classes,userdata FROM nodedata WHERE name = ?').bind([kwargs['certname']])
+                statement = @session.prepare('SELECT puppet_environment,puppet_classes,userdata FROM nodedata WHERE name = ?').bind([kwargs['certname']])
                 result    = @session.execute(statement)
             
                 if result.first.nil?
                     return {}
                 else
-                    return { 'nodedata' => JSON.parse(result.first['[json]']) }
+                    data = result.first
+
+                    data['puppet_classes'] = data.delete('puppet_classes').to_a unless data.nil? || data['puppet_classes'].nil?
+                    data['userdata'] = JSON.parse(data.delete('userdata')) unless data.nil? || data['userdata'].nil?
+
+                    { 'node' => data }
                 end
             end
 

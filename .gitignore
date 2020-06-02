@@ -25,3 +25,4 @@
 .project
 .envrc
 /inventory.yaml
+/files/puppet_data_service/puppet_data_service-*.gem

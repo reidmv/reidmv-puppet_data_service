@@ -8,7 +8,7 @@ module PuppetDataService
             @@plugin_type = :pds_database
 
             # @abstract
-            def initialize(_hosts:, _keyspace:, **_kwargs)
+            def initialize(_hosts:, _db_config:, _keyspace:, **_kwargs)
                 raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}"
             end
 

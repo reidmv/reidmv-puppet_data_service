@@ -16,16 +16,6 @@ class puppet_data_service::puppetserver::cassandra {
       }
     },
 
-    ['get-nodedata.rb', 'get-r10k-environments.rb'].map |$script| {
-      file { "/etc/puppetlabs/puppet/${script}":
-        ensure => file,
-        owner  => 'pe-puppet',
-        group  => 'pe-puppet',
-        mode   => '0755',
-        source => "puppet:///modules/puppet_data_service/${script}",
-      }
-    },
-
     file { '/etc/puppetlabs/puppet/puppet-data-service.yaml':
       ensure  => file,
       owner   => 'pe-puppet',

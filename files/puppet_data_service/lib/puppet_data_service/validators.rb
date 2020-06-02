@@ -17,6 +17,21 @@ module PuppetDataService
                 end
                 true
             end
+
+            # Validates a database class name (eval security measure)
+            #
+            # @param [String] klass
+            def self.is_valid_name?(klass)
+                input_type = 'database'
+                if !klass.match(/(Pds[A-Za-z0-9]+)/)
+                    raise Errors::ValidationError.new(
+                        "Database class names must start with 'Pds' and only contain letters and numbers!",
+                        input: klass,
+                        input_type: input_type
+                    )
+                end
+                true
+            end
         end
 
         module OpVerbs

@@ -35,8 +35,13 @@ module PuppetDataService
   
   PDS_DATABASES_DIR = 'puppet_data_service/databases'
 
-  def self.connect(database:, hosts:, **kwargs)
-      PuppetDataService.database_context_factory(database: database, hosts: hosts, opts: kwargs)
+  # Creates and returns a database context object.
+  #
+  # @param [String] database
+  # @param [Array] hosts
+  # @param [Hash] db_config
+  def self.connect(database:, hosts:, db_config: {}, **kwargs)
+      PuppetDataService.database_context_factory(database: database, hosts: hosts, db_config: db_config, opts: kwargs)
   end
 
 end

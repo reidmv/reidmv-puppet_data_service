@@ -1,6 +1,7 @@
 # Builds and installs the puppet_data_service gem locally
 class puppet_data_service::gem_install (
   Boolean $puppet_master = false,
+  String $gemver = '0.1.0',
   String $gemdir = '/etc/puppetlabs/puppet/puppet_data_service',
   String $agentgem = '/opt/puppetlabs/puppet/bin/gem',
   String $puppetserver = '/opt/puppetlabs/bin/puppetserver'
@@ -28,16 +29,20 @@ class puppet_data_service::gem_install (
     refreshonly => true,
     subscribe   => File[$gemdir],
   }
-  exec { 'install_to_agent_ruby':
-    command     => "/bin/cd ${gemdir} && ${agentgem} install --local puppet_data_service",
-    refreshonly => true,
-    subscribe   => Exec['build_gem'],
+  package { 'puppet_gem puppet_data_service':
+    ensure   => latest,
+    name     => 'puppet_data_service',
+    provider => 'puppet_gem',
+    source   => "${gemdir}/puppet_data_service-${gemver}.gem",
+    require  => Exec['build_gem'],
   }
   if $puppet_master {
-    exec { 'install_to_master_jruby':
-      command     => "/bin/cd ${gemdir} && ${puppetserver} gem install --local puppet_data_service",
-      refreshonly => true,
-      subscribe   => Exec['build_gem'],
+    package { 'puppetserver_gem puppet_data_service':
+      ensure   => latest,
+      name     => 'puppet_data_service',
+      provider => 'puppetserver_gem',
+      source   => "${gemdir}/puppet_data_service-${gemver}.gem",
+      require  => Exec['build_gem'],
     }
   }
 }

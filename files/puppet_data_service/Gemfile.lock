@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     puppet_data_service (0.1.0)
-      cassandra-driver (~> 3.2.4)
-      mongo (~> 2.12.1)
+      cassandra-driver (~> 3.2)
+      mongo (~> 2.12)
 
 GEM
   remote: https://rubygems.org/

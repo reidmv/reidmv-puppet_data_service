@@ -1,0 +1,12 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Task to fully uninstall the PDS",
+  "parameters": {
+    "puppet_conf": {
+      "description": "Full path to puppet.conf",
+      "type": "String[1]",
+      "default": "/etc/puppetlabs/puppet/puppet.conf"
+    }
+  }
+}

@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Supporting gem for the Puppet Data Service'
   spec.homepage      = 'https://github.com/reidmv/reidmv-puppet_data_service'
-  spec.license       = 'other'
+  spec.license       = 'Apache 2.0'
 
 #  spec.metadata['allowed_push_host'] = 'TODO: Set to http://mygemserver.com'
 
@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.9'
-  spec.add_dependency 'cassandra-driver', '~> 3.2.4'
-  spec.add_dependency 'mongo', '~> 2.12.1'
+  spec.add_dependency 'cassandra-driver', '~> 3.2'
+  spec.add_dependency 'mongo', '~> 2.12'
+  spec.add_dependency 'hocon', '~> 1.3.0'
 end

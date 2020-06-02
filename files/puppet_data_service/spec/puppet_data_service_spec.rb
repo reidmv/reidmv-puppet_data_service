@@ -16,4 +16,10 @@ RSpec.describe PuppetDataService do
       PuppetDataService.connect(database: 'fake', hosts: ['192.168.0.1']) 
     }.to raise_error(PuppetDataService::Errors::ValidationError)
   end
+
+  it "throws ValidationError for improper class name" do
+    expect {
+      PuppetDataService.connect(database: '`ls`', hosts: ['192.168.0.1'])
+    }.to raise_error(PuppetDataService::Errors::ValidationError)
+  end
 end
