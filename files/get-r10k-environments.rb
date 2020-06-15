@@ -13,7 +13,7 @@ class PuppetDataClient
   end
 
   def get_r10k_environments
-    statement = @session.prepare('SELECT JSON * FROM environments')
+    statement = @session.prepare('SELECT JSON * FROM puppet_environments')
     results   = @session.execute(statement)
 
     # Transform JSON formatted result into a Ruby hash
