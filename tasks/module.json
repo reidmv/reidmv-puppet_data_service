@@ -7,7 +7,7 @@
       "type": "Enum[list, add, modify, remove]",
       "description": "Which operation to perform"
     },
-    "puppet_environment": {
+    "environment": {
       "type": "String",
       "description": "Which Puppet environment to operate on"
     },
