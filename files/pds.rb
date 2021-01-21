@@ -15,21 +15,19 @@ class PuppetDataClient
   def get_nodedata(certname:)
     statement = @session.prepare('SELECT puppet_environment,puppet_classes,userdata FROM nodedata WHERE name = ?').bind([certname])
     result    = @session.execute(statement)
+    data      = result.first
 
-    if result.first.nil?
-      return {}
-    else
-      data = result.first
-      data['puppet_classes'] = data.delete('puppet_classes').to_a unless data.nil? || data['puppet_classes'].nil?
-      data['userdata'] = JSON.parse(data.delete('userdata')) unless data.nil? || data['userdata'].nil?
+    return {} if data.nil?
 
-      { 'node' => data }
-    end
+    data['puppet_classes'] = data['puppet_classes'].to_a unless data['puppet_classes'].nil?
+    data['userdata'] = JSON.parse(data['userdata']) unless data['userdata'].nil?
+
+    data
   end
 end
 
 if $PROGRAM_NAME == __FILE__
-  config = YAML.load_file('/etc/puppetlabs/puppet/puppet-data-service.yaml')
+  config = YAML.load_file('/etc/puppetlabs/puppet/pds.yaml')
 
   client = PuppetDataClient.new(hosts: config['hosts'])
   data = client.get_nodedata(certname: ARGV[0])
