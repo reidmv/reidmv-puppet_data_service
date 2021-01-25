@@ -11,11 +11,19 @@
 require 'yaml'
 require 'json'
 
+puts '#!/bin/bash'
 puts "cqlsh $(hostname -f) <<'EOF'"
 
 Dir.glob('**/*.yaml').each do |fn|
-  YAML.load_file(fn).each do |k,v|
-    puts "INSERT INTO puppet.hieradata (level, key, value) VALUES ('#{fn.delete_suffix('.yaml')}', '#{k}', $$#{v.to_json}$$);"
+  begin
+    data = YAML.load_file(fn)
+    unless data.is_a?(Hash)
+      STDERR.puts "Failed to load #{fn}; data is not a hash"
+      next
+    end
+    data.each do |k,v|
+      puts "INSERT INTO puppet.hieradata (level, key, value) VALUES ('#{fn.delete_suffix('.yaml')}', '#{k}', $$#{v.to_json}$$);"
+    end
   end
 end
 

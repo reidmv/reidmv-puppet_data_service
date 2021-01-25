@@ -65,7 +65,7 @@ class PuppetDataClient
 end
 
 if $PROGRAM_NAME == __FILE__
-  config = YAML.load_file('/etc/puppetlabs/puppet/puppet-data-service.yaml')
+  config = YAML.load_file('/etc/puppetlabs/puppet/pds.yaml')
 
   client = PuppetDataClient.new(hosts: config['hosts'])
   data = client.get_r10k_environments
