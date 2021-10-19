@@ -25,7 +25,7 @@ This module contains:
 
 1. Make sure this module and its dependencies (see [metadata.json](./metadata.json)) are added to your Puppetfile.
 1. Set up Cassandra on at least one system by classifying it with the `puppet_data_service::cassandra` class.
-1. Add the `puppet_data_service::puppetserver` class to the Puppet master, replica, and compilers.
+1. Add the `puppet_data_service::puppetserver` class to the Puppet primary server, replica, and compilers.
 1. Use the provided Bolt tasks to enter node, hiera, and/or environment data.
 
 ## Usage
@@ -125,7 +125,7 @@ Configure r10k.yaml to use PDS as an environment source.
 
 Set the r10k configuration using the following Hiera key. To avoid a chicken-and-egg situation, it is preferable to put this either in your pe.conf file, or as Data in the classifier under the PE Infrastructure node group. Note that the "remote" key is required, even though it is not used.
 
-Hiera key: puppet\_enterprise::master::code\_manager::sources
+Hiera key: puppet\_enterprise::primary::code\_manager::sources
 
 Example value:
 
